@@ -4,7 +4,12 @@ from django.contrib.auth import authenticate, login
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.db.models import Sum
+from rest_framework import viewsets
+from .serializers import *
 
+class ProductoViewset(viewsets.ModelViewSet):
+    queryset = Producto.objects.all()
+    serializer_class = ProductoSerializer
 
 # Create your views here.
 def index(request):
@@ -16,7 +21,6 @@ def index(request):
 
 def cargarLogin(request):
     return render(request, 'registration/login.html')
-
 
 def registro(request):
     data = {
@@ -121,7 +125,6 @@ def modificarProducto(request, id):
             data['form'] = formulario 
 
     return render(request, 'modificarProducto.html', data)
-
 
 def eliminarProducto(request, id):
     producto = get_object_or_404(Producto, id_producto=id)

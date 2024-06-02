@@ -1,8 +1,11 @@
-from django.urls import path
+from django.urls import path, include
 from .views import *
 from django.contrib.auth import views as auth_views
 from app import views
+from rest_framework import routers
 
+router = routers.DefaultRouter()
+router.register('producto', ProductoViewset)
 
 
 urlpatterns = [
@@ -23,8 +26,8 @@ urlpatterns = [
     path('eliminarProductoCarrito/<int:item_id>', views.eliminarProductoCarrito, name='eliminarProductoCarrito'),
     path('aumentarCantidadProducto/<int:item_id>/', views.aumentar_cantidad_producto, name='aumentar_cantidad_producto'),
     path('vaciarCarrito/', views.vaciar_carrito, name='vaciar_carrito'),
-    path('productos', views.productos, name='producto') 
-
+    path('productos', views.productos, name='producto'),
+    path('api/', include(router.urls)),
 
 
 
