@@ -27,8 +27,6 @@ urlpatterns = [
     path('aumentarCantidadProducto/<int:item_id>/', views.aumentar_cantidad_producto, name='aumentar_cantidad_producto'),
     path('vaciarCarrito/', views.vaciar_carrito, name='vaciar_carrito'),
     path('productos', views.productos, name='producto'),
+    #API_PRODUCTOS
     path('api/', include(router.urls)),
-
-
-
 ]

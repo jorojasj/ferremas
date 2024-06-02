@@ -144,5 +144,3 @@ def productos(request):
     return render(request, 'productos.html', data)
 
 
-
-
