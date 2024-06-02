@@ -1,4 +1,5 @@
 from django.db import models
+from django.contrib.auth.models import User
 
 # Create your models here.
 class Marca(models.Model):
@@ -31,3 +32,17 @@ class Producto(models.Model):
     def __str__(self):
         txt = "Codigo: {0} - Nombre: {1} - Stock: {2}"
         return txt.format(self.id_producto, self.nombre, self.stock)
+
+class Cart(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE, null=True, blank=True)
+    total = models.DecimalField(max_digits=10, decimal_places=2, default=0.00)
+
+class CartItem(models.Model):
+    cart = models.ForeignKey(Cart, on_delete=models.CASCADE)
+    producto = models.ForeignKey(Producto, on_delete=models.CASCADE)
+    cantidad = models.PositiveIntegerField(default=1)
+    subtotal = models.DecimalField(max_digits=10, decimal_places=2)
+
+    def save(self, *args, **kwargs):
+        self.subtotal = self.producto.precio * self.cantidad
+        super().save(*args, **kwargs)

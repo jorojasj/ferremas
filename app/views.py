@@ -3,6 +3,7 @@ from .forms import *
 from django.contrib.auth import authenticate, login
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
+from django.db.models import Sum
 
 
 # Create your views here.
@@ -13,7 +14,7 @@ def index(request):
     }
     return render(request, 'index.html', data)
 
-def login(request):
+def cargarLogin(request):
     return render(request, 'registration/login.html')
 
 
@@ -33,8 +34,56 @@ def registro(request):
     return render(request, 'registration/registrar.html', data)
 
 @login_required
+def aumentar_cantidad_producto(request, item_id):
+    cart = get_cart(request)
+    cart_item = get_object_or_404(CartItem, id=item_id, cart=cart)
+    if request.method == 'POST':
+        cantidad = int(request.POST.get('cantidad', 1))
+        cart_item.cantidad = cantidad
+        cart_item.save()
+    return redirect('carrito')
+
+def get_cart(request):
+    if request.user.is_authenticated:
+        cart, created = Cart.objects.get_or_create(user=request.user)
+    else:
+        cart_id = request.session.get('cart_id')
+        if cart_id:
+            cart = get_object_or_404(Cart, id=cart_id)
+        else:
+            cart = Cart.objects.create()
+            request.session['cart_id'] = cart.id
+    return cart
+
+@login_required
 def carrito(request):
-    return render(request, 'carrito.html')
+    cart = get_cart(request)
+    total_cart = cart.cartitem_set.aggregate(total=Sum('subtotal'))['total']
+    return render(request, 'carrito.html', {'cart': cart, 'total_cart': total_cart})
+
+@login_required
+def añadirCarrito(request, id):
+    producto = get_object_or_404(Producto, id_producto=id)
+    cart = get_cart(request)
+    cart_item, created = CartItem.objects.get_or_create(cart=cart, producto=producto)
+    if not created:
+        cart_item.cantidad += 1
+        cart_item.save()
+
+    return redirect('carrito')
+
+def eliminarProductoCarrito(request, item_id):
+    cart = get_cart(request)
+    cart_item = get_object_or_404(CartItem, id=item_id, cart=cart)
+    cart_item.delete()
+    messages.success(request, "Eliminado Correctamente")
+    return redirect('carrito')
+
+@login_required
+def vaciar_carrito(request):
+    cart = get_cart(request)
+    cart.cartitem_set.all().delete()
+    return redirect('carrito')
 
 def agregarProducto(request):
     data = {
@@ -83,6 +132,7 @@ def eliminarProducto(request, id):
 def detalleProducto(request, id):
     producto = get_object_or_404(Producto, id_producto=id)
     return render(request, 'detalleProducto.html',{'producto': producto})
+
 
 
 
