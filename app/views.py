@@ -6,6 +6,9 @@ from django.contrib.auth.decorators import login_required
 from django.db.models import Sum
 from rest_framework import viewsets
 from .serializers import *
+from .utils import obtener_tipo_cambio
+from decimal import Decimal
+
 
 class ProductoViewset(viewsets.ModelViewSet):
     queryset = Producto.objects.all()
@@ -13,11 +16,13 @@ class ProductoViewset(viewsets.ModelViewSet):
 
 # Create your views here.
 def index(request):
+    tipo_cambio = obtener_tipo_cambio()
     productos = Producto.objects.all()
-    data = {
-        'productos':productos
-    }
-    return render(request, 'index.html', data)
+
+    for producto in productos:
+        producto.precio_dolar = producto.precio/tipo_cambio
+
+    return render(request, 'index.html', {'productos':productos})
 
 def cargarLogin(request):
     return render(request, 'registration/login.html')
@@ -63,7 +68,14 @@ def get_cart(request):
 def carrito(request):
     cart = get_cart(request)
     total_cart = cart.cartitem_set.aggregate(total=Sum('subtotal'))['total']
-    return render(request, 'carrito.html', {'cart': cart, 'total_cart': total_cart})
+    tipo_cambio = obtener_tipo_cambio()
+    tipo_cambio_decimal = Decimal(tipo_cambio)
+    total_cart_dolar = total_cart / tipo_cambio_decimal if total_cart else 0
+    return render(request, 'carrito.html', {
+        'cart': cart,
+        'total_cart': total_cart,
+        'total_cart_dolar': total_cart_dolar
+    })
 
 @login_required
 def añadirCarrito(request, id):
@@ -137,10 +149,12 @@ def detalleProducto(request, id):
     return render(request, 'detalleProducto.html',{'producto': producto})
 
 def productos(request):
+    tipo_cambio = obtener_tipo_cambio()
     productos = Producto.objects.all()
-    data = {
-        'productos':productos
-    }
-    return render(request, 'productos.html', data)
+
+    for producto in productos:
+        producto.precio_dolar = producto.precio/tipo_cambio
+
+    return render(request, 'productos.html', {'productos':productos})
 
 

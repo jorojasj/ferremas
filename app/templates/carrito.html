@@ -39,10 +39,11 @@
                 </tbody>
             </table>
             <div class="row mx-4">
-                <div class="col-sm-3">
-                    <h3 class="itemCartTotal ">Total: ${{ total_cart|default:0 }}</h3>
+                <div class="col-sm-5">
+                    <h3 class="itemCartTotal ">Total: ${{ total_cart|default:0 }}, Total USD ${{ total_cart_dolar|floatformat:2|default:0 }}</h3>
+                    
                 </div>
-                <div class="col-sm-6 d-flex justify-content-end">
+                <div class="col-sm-4 d-flex justify-content-end">
                     <form action="{% url 'vaciar_carrito' %}" method="post">
                         {% csrf_token %}
                         <button type="submit" class="btn btn-danger">Vaciar Carrito</button>
