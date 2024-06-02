@@ -39,19 +39,20 @@
                 </tbody>
             </table>
             <div class="row mx-4">
-                <div class="col-sm-5">
+                <div class="col-sm-6">
                     <h3 class="itemCartTotal ">Total: ${{ total_cart|default:0 }}, Total USD ${{ total_cart_dolar|floatformat:2|default:0 }}</h3>
                     
                 </div>
-                <div class="col-sm-4 d-flex justify-content-end">
+                <div class="col-sm-2 ">
                     <form action="{% url 'vaciar_carrito' %}" method="post">
                         {% csrf_token %}
                         <button type="submit" class="btn btn-danger">Vaciar Carrito</button>
                     </form>  
+                    
                 </div>
               
-                <div class="col-sm-3 d-flex justify-content-end">
-                    <a class="btn btn-primary">Ir a pagar</a>
+                <div class="col-sm-4 d-flex justify-content-end">
+                    <a id="paypal-button-container"></a>
                 </div>
             </div>
             {% else %}
@@ -68,6 +69,41 @@
 
 {% endblock %}
 {% block js %}
+<script src="https://www.paypal.com/sdk/js?client-id=AR26GGZpptbWdu3NyWSHjVXh8fT01jqN8qlgJjluJwWZsvD_7O29IjToBaEOErg5399jegwHWV2JbUTJ"></script>
+<script>
+    paypal.Buttons({
+        createOrder: function(data, actions) {
+            return actions.order.create({
+                purchase_units: [{
+                    amount: {
+                        value: '{{ total_cart_dolar|floatformat:2|default:0 }}' // Aquí puedes pasar el valor del total del carrito en dólares
+                    }
+                }]
+            });
+        },
+        onApprove: function(data, actions) {
+            return actions.order.capture().then(function(details) {
+                // Mostrar mensaje de éxito
+                alert('Transacción completada por ' + details.payer.name.given_name);
+                
+                // Vaciar el carrito
+                fetch("{% url 'vaciar_carrito' %}", {
+                    method: 'POST',
+                    headers: {
+                        'X-CSRFToken': '{{ csrf_token }}',
+                    },
+                }).then(response => {
+                    if (response.ok) {
+                        window.location.reload(); // Recargar la página para reflejar el carrito vacío
+                    } else {
+                        alert('Hubo un problema al vaciar el carrito');
+                    }
+                });
+            });
+        }
+    }).render('#paypal-button-container');
+</script>
+
 <script>
     document.querySelectorAll('.quantity-input').forEach(function(input) {
         input.addEventListener('change', function() {
