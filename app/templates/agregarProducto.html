@@ -1,0 +1,54 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %} Agregar Producto {% endblock %}
+
+{% block css %}
+{% endblock %}
+
+{% block content %}
+{% load crispy_forms_tags %}
+<div class="container mt-5 mb-5">
+    <div class="row">
+        <div class="col-12 col-md-6 offset-md-3">
+            <div class="card">
+                <div class="card-body">
+                    <h2>Nuevo Producto</h2>
+                    <hr>
+                    <form action="" method="post" enctype="multipart/form-data">
+                        {% csrf_token %}
+                        {{ form | crispy }}
+                        <div class="d-flex justify-content-end">
+                            <input type="reset" value="Reiniciar" class="btn btn-secondary">
+                            <input type="submit" value="Guardar" class="btn btn-primary">
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block js %}
+<script>
+    function eliminarProducto(id){
+        Swal.fire({
+            "title":"¿Estas seguro?",
+            "text":"Esta acción no se puede deshacer",
+            "icon":"question",
+            "showCancelButton":true,
+            "cancelButtonText":"Cancelar",
+            "confirmButtonText":"Si, Eliminar",
+            "reverseButtons":true,
+            "confirmButtonColor":"#dc3545"
+        }
+        )
+        .then(function(result){
+            if(result.isConfirmed){
+                window.location.href = "/eliminarProducto/"+id+"/"
+            }
+        })
+    }
+</script>
+{% endblock %}
+

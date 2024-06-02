@@ -1,0 +1,32 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %} Inicio {% endblock %}
+
+{% block css %}
+{% endblock %}
+
+{% block content %}
+{% load crispy_forms_tags %}
+<div class="container mt-5 mb-5">
+    <div class="row">
+        <div class="col-12 col-md-6 offset-md-3">
+            <div class="card">
+                <div class="card-body">
+                    <h2>Ingresa tus credenciales</h2>
+                    <hr>
+                    <form action="" method="post">
+                        {% csrf_token %}
+                        {{ form | crispy }}
+                        <a href="{% url 'index' %}">Ir al inicio</a>
+                        <input type="submit" class="btn btn-success float-right">
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block js %}
+{% endblock %}
+
