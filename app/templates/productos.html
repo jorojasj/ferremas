@@ -1,0 +1,42 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %} Inicio {% endblock %}
+
+{% block css %}
+{% endblock %}
+
+{% block content %}
+
+<div class="container mt-5 mb-5 text-center">
+    <h2>Nuestros Productos</h2>
+  </div>
+  <div class="container mb-3">
+    <div class="row">
+      {% for p in productos %}
+      <div class="col-sm">
+        <div id="miCard" class="card" style="width: 18rem;">
+          {% if user.is_superuser %}
+          <small class="sku">SKU: {{p.id_producto}}</small>
+          {% else %}
+          {% endif %}
+          <a href="{% url 'detalleProducto' p.id_producto %}">
+          <img src="{{ p.imagen.url }}" class="card-img-top" alt="...">
+          </a>
+          <div class="card-body">
+            <h5 class="nombre card-title">{{p.nombre}}</h5>
+            <h6 class="descripcion">{{p.descripcion}}</h6>
+            <h3 class="precio">${{p.precio}}</h3>
+            {% if user.is_authenticated %}
+            <a href="{% url 'añadirCarrito' p.id_producto %}" class="btn btn-primary">Agregar al carrito</a>
+            {% else %}
+            {% endif %}
+          </div>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+{% endblock %}
+
+{% block js %}
+{% endblock %}

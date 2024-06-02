@@ -133,6 +133,13 @@ def detalleProducto(request, id):
     producto = get_object_or_404(Producto, id_producto=id)
     return render(request, 'detalleProducto.html',{'producto': producto})
 
+def productos(request):
+    productos = Producto.objects.all()
+    data = {
+        'productos':productos
+    }
+    return render(request, 'productos.html', data)
+
 
 
 
