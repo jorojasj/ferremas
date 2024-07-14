@@ -22,7 +22,7 @@
                     {% for item in cart.cartitem_set.all %}
                     <tr>
                         <td><img style="width: 70px; padding-right: 10px;" src="{{item.producto.imagen.url}}" alt="">{{ item.producto.nombre }}, {{ item.producto.descripcion }}</td>
-                        <td>{{ item.producto.precio }}</td>
+                        <td>${{ item.producto.precio }}</td>
                         <td><form action="{% url 'aumentar_cantidad_producto' item.id %}" method="post" class="cart-item-form">
                             {% csrf_token %}
                             <input type="number" name="cantidad" value="{{ item.cantidad}}" min="1" class="quantity-input">

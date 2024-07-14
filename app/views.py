@@ -1,3 +1,5 @@
+from django.http import HttpResponseRedirect, JsonResponse
+from django.urls import reverse, reverse_lazy
 from django.shortcuts import get_object_or_404, render, redirect
 from .forms import *
 from django.contrib.auth import authenticate, login
@@ -8,6 +10,8 @@ from rest_framework import viewsets
 from .serializers import *
 from .utils import obtener_tipo_cambio
 from decimal import Decimal
+from django.contrib.auth.models import User, Group
+from django.contrib.auth import views as auth_views
 
 
 class ProductoViewset(viewsets.ModelViewSet):
@@ -157,4 +161,54 @@ def productos(request):
 
     return render(request, 'productos.html', {'productos':productos})
 
+def vista_administrador(request):
+    usuarios = User.objects.all()
+    return render(request, 'administrador/administrador.html', {'usuarios': usuarios})
 
+def agregarUsuario(request):
+    if request.method == 'POST':
+        username = request.POST.get('username')
+        first_name = request.POST.get('first_name')
+        last_name = request.POST.get('last_name')
+        password = request.POST.get('password')
+        email = request.POST.get('email')
+        rol = request.POST.get('rol')
+
+        try:
+            grupo = Group.objects.get(name=rol)
+        except Group.DoesNotExist:
+            messages.error(request, "El rol no existe")
+            return redirect('administrador')
+
+        try:
+            user = User.objects.create_user(username=username, first_name=first_name, last_name=last_name, password=password, email=email)
+            user.groups.add(grupo)
+            user.save()
+            messages.success(request, "Usuario creado correctamente")
+            return redirect('administrador')
+        except Exception as e:
+            messages.error(request, f'Error al crear el usuario: {e}')
+        return redirect(to='administrador')
+    else:
+        return render(request, 'administrador/agregarUsuario.html')
+
+def modificarUsuario():
+    return redirect(to='administrador')
+
+def eliminarUsuario(request, id):
+    usuario = get_object_or_404(User, id=id)
+    usuario.delete()
+    messages.success(request, "Eliminado Correctamente")
+    return redirect(to="administrador")
+
+class PasswordResetDoneView(auth_views.PasswordResetDoneView):
+    template_name = 'registration/password_reset_done.html'
+    success_url = reverse_lazy('cargarLogin')  # Asegúrate de que 'login' sea el nombre de tu URL de login
+
+class PasswordResetConfirmView(auth_views.PasswordResetConfirmView):
+    template_name = 'registration/password_reset_confirm.html'
+    success_url = reverse_lazy('cargarLogin')
+
+class PasswordResetCompleteView(auth_views.PasswordResetCompleteView):
+    template_name = 'registration/password_reset_complete.html'
+    success_url = reverse_lazy('cargarLogin')

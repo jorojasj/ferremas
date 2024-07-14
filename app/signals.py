@@ -1,6 +1,8 @@
 from django.contrib.auth.signals import user_logged_in, user_logged_out
 from django.dispatch import receiver
-from .models import Cart
+from django.db.models.signals import post_save
+from django.contrib.auth.models import User  
+from .models import *
 
 @receiver(user_logged_in)
 def move_cart_to_user(sender, user, request, **kwargs):
@@ -17,3 +19,5 @@ def save_cart_in_session(sender, user, request, **kwargs):
         request.session['cart_id'] = cart.id
     except Cart.DoesNotExist:
         pass
+
+
