@@ -116,14 +116,14 @@ def agregarProducto(request):
         else:
             data['form'] = formulario    
 
-    return render(request, 'agregarProducto.html', data)
+    return render(request, 'bodeguero/agregarProducto.html', data)
 
 def listarProducto(request):
     productos = Producto.objects.all()
     data = {
         'productos':productos
     }
-    return render(request, 'listarProducto.html', data)
+    return render(request, 'bodeguero/listarProducto.html', data)
 
 def modificarProducto(request, id):
     producto = get_object_or_404(Producto, id_producto=id)
@@ -139,7 +139,7 @@ def modificarProducto(request, id):
         else:
             data['form'] = formulario 
 
-    return render(request, 'modificarProducto.html', data)
+    return render(request, 'bodeguero/modificarProducto.html', data)
 
 def eliminarProducto(request, id):
     producto = get_object_or_404(Producto, id_producto=id)
