@@ -12,7 +12,6 @@ from .utils import obtener_tipo_cambio
 from decimal import Decimal
 from django.contrib.auth.models import User, Group
 from django.contrib.auth import views as auth_views
-from django.contrib.auth.forms import UserChangeForm
 
 class ProductoViewset(viewsets.ModelViewSet):
     queryset = Producto.objects.all()
@@ -225,3 +224,14 @@ class PasswordResetConfirmView(auth_views.PasswordResetConfirmView):
 class PasswordResetCompleteView(auth_views.PasswordResetCompleteView):
     template_name = 'registration/password_reset_complete.html'
     success_url = reverse_lazy('cargarLogin')
+
+#Contacto
+def contacto(request):
+    if request.method == 'POST':
+        nombre = request.POST.get('nombre')
+        email = request.POST.get('email')
+        mensaje = request.POST.get('mensaje')
+        
+        messages.success(request, "Mensaje enviado correctamente")
+        return redirect('contacto')
+    return render(request, 'contacto.html')
