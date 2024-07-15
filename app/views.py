@@ -12,7 +12,7 @@ from .utils import obtener_tipo_cambio
 from decimal import Decimal
 from django.contrib.auth.models import User, Group
 from django.contrib.auth import views as auth_views
-
+from django.contrib.auth.forms import UserChangeForm
 
 class ProductoViewset(viewsets.ModelViewSet):
     queryset = Producto.objects.all()
@@ -161,6 +161,8 @@ def productos(request):
 
     return render(request, 'productos.html', {'productos':productos})
 
+
+#Administrador
 def vista_administrador(request):
     usuarios = User.objects.all()
     return render(request, 'administrador/administrador.html', {'usuarios': usuarios})
@@ -192,8 +194,17 @@ def agregarUsuario(request):
     else:
         return render(request, 'administrador/agregarUsuario.html')
 
-def modificarUsuario():
-    return redirect(to='administrador')
+def modificarUsuario(request, id):
+    usuario = get_object_or_404(User, id=id)
+    if request.method == 'POST':
+        formulario = CustomUserCreationForm(request.POST, instance=usuario)
+        if formulario.is_valid():
+            formulario.save()
+            messages.success(request, "Modificado correctamente")
+            return redirect(to="administrador")
+    else:
+        formulario = CustomUserCreationForm(instance=usuario)
+    return render(request, 'administrador/modificarUsuario.html', {'form': formulario})
 
 def eliminarUsuario(request, id):
     usuario = get_object_or_404(User, id=id)
@@ -201,6 +212,8 @@ def eliminarUsuario(request, id):
     messages.success(request, "Eliminado Correctamente")
     return redirect(to="administrador")
 
+
+#Resetear Contraseña
 class PasswordResetDoneView(auth_views.PasswordResetDoneView):
     template_name = 'registration/password_reset_done.html'
     success_url = reverse_lazy('cargarLogin')  # Asegúrate de que 'login' sea el nombre de tu URL de login

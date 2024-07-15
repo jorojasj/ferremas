@@ -28,7 +28,7 @@
                             {% endfor %}
                         </td>
                         <td>                  
-                            <a href="" class="btn btn-primary">Modificar</a>
+                            <a href="{% url 'modificarUsuario' usuario.id%}" class="btn btn-primary">Modificar</a>
                             <a href="{% url 'eliminarUsuario' usuario.id %}" class="btn btn-danger">Eliminar</a>
                         </td>
                     </tr>

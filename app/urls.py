@@ -13,7 +13,7 @@ urlpatterns = [
     #Administrador
     path('administrador/', views.vista_administrador, name='administrador'),
     path('agregarUsuario/', views.agregarUsuario, name='agregarUsuario'),
-    path('modificarUsuario/<id>', views.eliminarUsuario, name='modificarUsuario'),
+    path('modificarUsuario/<id>', views.modificarUsuario, name='modificarUsuario'),
     path('eliminarUsuario/<id>', views.eliminarUsuario, name='eliminarUsuario'),
     #Usuario
     #Registration

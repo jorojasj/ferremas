@@ -23,10 +23,12 @@
                     <tr>
                         <td><img style="width: 70px; padding-right: 10px;" src="{{item.producto.imagen.url}}" alt="">{{ item.producto.nombre }}, {{ item.producto.descripcion }}</td>
                         <td>${{ item.producto.precio }}</td>
-                        <td><form action="{% url 'aumentar_cantidad_producto' item.id %}" method="post" class="cart-item-form">
-                            {% csrf_token %}
-                            <input type="number" name="cantidad" value="{{ item.cantidad}}" min="1" class="quantity-input">
-                        </form></td>
+                        <td>
+                            <form action="{% url 'aumentar_cantidad_producto' item.id %}" method="post" class="cart-item-form">
+                                {% csrf_token %}
+                                <input type="number" name="cantidad" value="{{ item.cantidad }}" min="1" class="quantity-input">
+                            </form>
+                        </td>
                         <td>${{ item.subtotal }}</td>
                         <td>
                             <form action="{% url 'eliminarProductoCarrito' item.id %}" method="post">
@@ -38,25 +40,25 @@
                     {% endfor %}
                 </tbody>
             </table>
+            {% else %}
+            <div class="">
+                Tu carrito está vacío. ¡Explora nuestros productos y encuentra lo que necesitas!
+            </div>
+            {% endif %}
             <div class="row mx-4">
                 <div class="col-sm-6">
-                    <h3 class="itemCartTotal ">Total: ${{ total_cart|default:0 }}, Total USD ${{ total_cart_dolar|floatformat:2|default:0 }}</h3>
-                    
+                    <h3 class="itemCartTotal">Total: ${{ total_cart|default:0 }}, Total USD ${{ total_cart_dolar|floatformat:2|default:0 }}</h3>
                 </div>
-                <div class="col-sm-2 ">
+                <div class="col-sm-2">
                     <form action="{% url 'vaciar_carrito' %}" method="post">
                         {% csrf_token %}
                         <button type="submit" class="btn btn-danger">Vaciar Carrito</button>
-                    </form>  
-                    
+                    </form>
                 </div>
-              
                 <div class="col-sm-4 d-flex justify-content-end">
                     <a id="paypal-button-container"></a>
                 </div>
             </div>
-            {% else %}
-            {% endif %}
             <div class="row mt-4 d-flex align-items-center">
                 <div class="col-sm-6 mb-3 mb-m-1 order-md-1 text-md-left">
                     <a href="/">
@@ -66,13 +68,14 @@
         </div>
     </div>
 </div>
-
 {% endblock %}
+
 {% block js %}
-<script src="https://www.paypal.com/sdk/js?client-id=AR26GGZpptbWdu3NyWSHjVXh8fT01jqN8qlgJjluJwWZsvD_7O29IjToBaEOErg5399jegwHWV2JbUTJ"></script>
+<script
+    src="https://www.paypal.com/sdk/js?client-id=AR26GGZpptbWdu3NyWSHjVXh8fT01jqN8qlgJjluJwWZsvD_7O29IjToBaEOErg5399jegwHWV2JbUTJ"></script>
 <script>
     paypal.Buttons({
-        createOrder: function(data, actions) {
+        createOrder: function (data, actions) {
             return actions.order.create({
                 purchase_units: [{
                     amount: {
@@ -81,11 +84,11 @@
                 }]
             });
         },
-        onApprove: function(data, actions) {
-            return actions.order.capture().then(function(details) {
+        onApprove: function (data, actions) {
+            return actions.order.capture().then(function (details) {
                 // Mostrar mensaje de éxito
                 alert('Transacción completada por ' + details.payer.name.given_name);
-                
+
                 // Vaciar el carrito
                 fetch("{% url 'vaciar_carrito' %}", {
                     method: 'POST',
@@ -105,8 +108,8 @@
 </script>
 
 <script>
-    document.querySelectorAll('.quantity-input').forEach(function(input) {
-        input.addEventListener('change', function() {
+    document.querySelectorAll('.quantity-input').forEach(function (input) {
+        input.addEventListener('change', function () {
             this.closest('.cart-item-form').submit();
         });
     });
